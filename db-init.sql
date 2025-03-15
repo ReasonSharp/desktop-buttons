@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS dirs (
+ var_name VARCHAR(50) PRIMARY KEY,
+ path TEXT NOT NULL,
+ title VARCHAR(50) NOT NULL,
+ description TEXT NOT NULL,
+ CONSTRAINT path_uq UNIQUE (path)
+);

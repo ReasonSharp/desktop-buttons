@@ -1,0 +1,37 @@
+#!/bin/bash
+OUTPUT="/opt/desktop-buttons/desktop.html"
+cat > "$OUTPUT" << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Haven</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function openDir(path) {
+            window.location.href = `desktop://${path}`;
+        }
+        function showDesc(desc) {
+            document.getElementById("desc").textContent = desc;
+        }
+        function clearDesc() {
+            document.getElementById("desc").textContent = "";
+        }
+    </script>
+</head>
+<body>
+    <h1>My Haven</h1>
+    <div class="button-grid">
+EOF
+
+# Fetch from DB and generate buttons
+psql -U nikola -d basedb -h localhost -t -A -F"|" -c "SELECT path, title, description FROM dirs" | while IFS="|" read -r path title description; do
+    echo "        <button onmouseover=\"showDesc('$description')\" onmouseout=\"clearDesc()\" onclick=\"openDir('$path')\">$title</button>" >> "$OUTPUT"
+done
+
+# Close HTML with description area
+cat >> "$OUTPUT" << 'EOF'
+    </div>
+    <p id="desc"></p>
+</body>
+</html>
+EOF

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Haven</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function openDir(path) {
+            window.location.href = `desktop://${path}`;
+        }
+        function showDesc(desc) {
+            document.getElementById("desc").textContent = desc;
+        }
+        function clearDesc() {
+            document.getElementById("desc").textContent = "Hover over a button to see its description.";
+        }
+
+        // Fetch dirs from API and build buttons
+        window.onload = async () => {
+            try {
+                const response = await fetch("http://localhost:8000/api/v1/dirs");
+                const dirs = await response.json();
+                const grid = document.querySelector(".button-grid");
+                dirs.forEach(dir => {
+                    const button = document.createElement("button");
+                    button.textContent = dir.title;
+                    button.onmouseover = () => showDesc(dir.desc);
+                    button.onmouseout = clearDesc;
+                    button.onclick = () => openDir(dir.path);
+                    grid.appendChild(button);
+                });
+            } catch (error) {
+                console.error("Failed to load dirs:", error);
+                document.getElementById("desc").textContent = "Error loading directories.";
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>My Haven</h1>
+    <div class="button-grid"></div>
+    <p id="desc">Hover over a button to see its description.</p>
+</body>
+</html>
